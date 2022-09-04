@@ -1,4 +1,5 @@
 # Project exclude paths
 /customer/target/
 /fraud/target/
-/.idea/*.xml
+/eureka-server/target
+.idea
