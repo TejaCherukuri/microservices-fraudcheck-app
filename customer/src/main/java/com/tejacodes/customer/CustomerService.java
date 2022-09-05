@@ -37,6 +37,21 @@ public class CustomerService {
         if(fraudCheckResponse != null)
             if(fraudCheckResponse.isFraudster())
                 throw new IllegalStateException("Customer is a Fraudster");
+            else
+            {
+                log.info("Calling Notification Microservice");
+                //Send Notification using Rest Template
+                String result = restTemplate.postForObject(
+                         "http://NOTIFICATION/api/v1/notification",
+                         new NotificationRequest(customer.getId(),
+                                            customer.getEmail(),
+                                            "Welcome Message"),
+                        String.class
+
+                );
+                log.info(result);
+                log.info("Returned from Notification Microservice");
+            }
 
         log.info("Exiting CustomerService.registerCustomer()");
 
