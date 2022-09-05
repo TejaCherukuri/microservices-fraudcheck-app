@@ -1,4 +1,4 @@
-package com.tejacodes.fraud;
+package com.tejacodes.clients.fraud;
 
 public record FraudCheckResponse(Boolean isFraudster) {
 

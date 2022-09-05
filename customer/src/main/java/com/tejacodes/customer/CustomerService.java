@@ -1,5 +1,7 @@
 package com.tejacodes.customer;
 
+import com.tejacodes.clients.fraud.FraudCheckResponse;
+import com.tejacodes.clients.fraud.FraudClient;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,6 +15,9 @@ public class CustomerService {
 
     @Autowired
     private RestTemplate restTemplate;
+
+    @Autowired
+    private FraudClient fraudCLient;
     public void registerCustomer(CustomerRegistrationRequest customerRegistrationRequest)
     {
         log.info("Entering CustomerService.registerCustomer()");
@@ -23,10 +28,11 @@ public class CustomerService {
         customerRepository.saveAndFlush(customer);
 
         log.info("Calling Fraud Microservice");
+
+        //Calling using Open Feign Rest Client
         FraudCheckResponse fraudCheckResponse =
-                restTemplate.getForObject("http://FRAUD/api/v1/fraud-check/{customerId}",
-                                    FraudCheckResponse.class,
-                                    customer.getId());
+                fraudCLient.isFraudulentCustomer(customer.getId());
+
         log.info("Returned from Fraud Microservice");
         if(fraudCheckResponse != null)
             if(fraudCheckResponse.isFraudster())

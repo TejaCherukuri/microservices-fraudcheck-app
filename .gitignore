@@ -2,4 +2,5 @@
 /customer/target/
 /fraud/target/
 /eureka-server/target
+/clients/target
 .idea
