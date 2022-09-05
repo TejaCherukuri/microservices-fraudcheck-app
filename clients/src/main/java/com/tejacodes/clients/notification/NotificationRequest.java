@@ -1,4 +1,4 @@
-package com.tejacodes.notification;
+package com.tejacodes.clients.notification;
 
 public record NotificationRequest(
         Integer toCustomerId,

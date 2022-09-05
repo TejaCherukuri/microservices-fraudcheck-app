@@ -2,6 +2,8 @@ package com.tejacodes.customer;
 
 import com.tejacodes.clients.fraud.FraudCheckResponse;
 import com.tejacodes.clients.fraud.FraudClient;
+import com.tejacodes.clients.notification.NotificationClient;
+import com.tejacodes.clients.notification.NotificationRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,6 +20,9 @@ public class CustomerService {
 
     @Autowired
     private FraudClient fraudCLient;
+
+    @Autowired
+    private NotificationClient notificationClient;
     public void registerCustomer(CustomerRegistrationRequest customerRegistrationRequest)
     {
         log.info("Entering CustomerService.registerCustomer()");
@@ -40,14 +45,11 @@ public class CustomerService {
             else
             {
                 log.info("Calling Notification Microservice");
-                //Send Notification using Rest Template
-                String result = restTemplate.postForObject(
-                         "http://NOTIFICATION/api/v1/notification",
-                         new NotificationRequest(customer.getId(),
-                                            customer.getEmail(),
-                                            "Welcome Message"),
-                        String.class
-
+                // Calling using Open feign rest client
+                String result = notificationClient.sendNotification(
+                        new NotificationRequest(customer.getId(),
+                                                customer.getEmail(),
+                                                String.format("Hello %s, Welcome", customer.getFirstName()))
                 );
                 log.info(result);
                 log.info("Returned from Notification Microservice");

@@ -1,5 +1,6 @@
 package com.tejacodes.notification;
 
+import com.tejacodes.clients.notification.NotificationRequest;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
