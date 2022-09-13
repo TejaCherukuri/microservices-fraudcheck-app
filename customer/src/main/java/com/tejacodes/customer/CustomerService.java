@@ -1,5 +1,6 @@
 package com.tejacodes.customer;
 
+import com.tejacodes.amqp.RabbitMQMessageProducer;
 import com.tejacodes.clients.fraud.FraudCheckResponse;
 import com.tejacodes.clients.fraud.FraudClient;
 import com.tejacodes.clients.notification.NotificationClient;
@@ -23,6 +24,10 @@ public class CustomerService {
 
     @Autowired
     private NotificationClient notificationClient;
+
+    @Autowired
+    private RabbitMQMessageProducer rabbitMQMessageProducer;
+
     public void registerCustomer(CustomerRegistrationRequest customerRegistrationRequest)
     {
         log.info("Entering CustomerService.registerCustomer()");
@@ -44,15 +49,17 @@ public class CustomerService {
                 throw new IllegalStateException("Customer is a Fraudster");
             else
             {
-                log.info("Calling Notification Microservice");
-                // Calling using Open feign rest client
-                String result = notificationClient.sendNotification(
+                log.info("------Asynchronous communication using message queues-------");
+                log.info("Publishing message to the queue by using RabbitMQMessageProducer");
+
+                NotificationRequest notificationRequest =
                         new NotificationRequest(customer.getId(),
                                                 customer.getEmail(),
-                                                String.format("Hello %s, Welcome", customer.getFirstName()))
-                );
-                log.info(result);
-                log.info("Returned from Notification Microservice");
+                                                String.format("Hello %s, Welcome", customer.getFirstName()));
+
+                rabbitMQMessageProducer.publish(notificationRequest,
+                                                "internal.exchange",
+                                                "internal.notification.routing-key");
             }
 
         log.info("Exiting CustomerService.registerCustomer()");
