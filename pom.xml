@@ -66,8 +66,9 @@
   </dependencies>
 
   <build>
-    <pluginManagement><!-- lock down plugins versions to avoid using Maven defaults (may be moved to parent pom) -->
+    <pluginManagement>
       <plugins>
+        <!-- plugin used to package and run spring boot application -->
         <plugin>
           <groupId>org.springframework.boot</groupId>
           <artifactId>spring-boot-maven-plugin</artifactId>
@@ -79,7 +80,43 @@
               </goals>
             </execution>
           </executions>
-
+        </plugin>
+        <!-- jib plugin used to create containerized images for your java application-->
+        <plugin>
+          <groupId>com.google.cloud.tools</groupId>
+          <artifactId>jib-maven-plugin</artifactId>
+          <version>3.3.0</version>
+          <configuration>
+            <from>
+              <image>eclipse-temurin:17</image>
+              <platforms>
+                <platform>
+                  <architecture>arm64</architecture>
+                  <os>linux</os>
+                </platform>
+                <platform>
+                  <architecture>amd64</architecture>
+                  <os>linux</os>
+                </platform>
+              </platforms>
+            </from>
+            <to>
+              <!-- <image>{your_docker_id}${project.artifactId}:${project.version}</image> -->
+              <image>tejacherukuri/${project.artifactId}:${project.version}</image>
+              <tags>
+                <tag>latest</tag>
+              </tags>
+            </to>
+          </configuration>
+          <!--  Bind this jib:build to the lifecycle phase of Maven -->
+          <executions>
+            <execution>
+              <phase>package</phase>
+              <goals>
+                <goal>build</goal>
+              </goals>
+            </execution>
+          </executions>
         </plugin>
       </plugins>
     </pluginManagement>
